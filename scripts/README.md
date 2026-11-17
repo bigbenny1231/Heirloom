@@ -103,6 +103,8 @@ Run a workflow: **Actions** tab > pick the workflow on the left > **Run workflow
     settles triggered ones. It pauses itself from Nov 16 to Nov 19 UTC so it cannot race the drill runs. Turn it off
     any time: Actions > Keeper > "..." menu > Disable workflow.
 
+Any time: **Send test QOR** (`send.yml`) sends up to 5 test QOR from the deployer to a `qor1` address you paste (for example your own QoreX wallet). It keeps 10 QOR in the deployer for the drill.
+
 If a run goes red, open it, tap the failed step and read the last lines. The messages say what to fix
 (for example "send it some QOR first" or "Missing DEPLOYER_MNEMONIC").
 

@@ -1,0 +1,48 @@
+name: Send test QOR
+# Sends test QOR from the deployer to a qor1 address (testnet only, at most 5 QOR, keeps 10 QOR for the drill).
+on:
+  workflow_dispatch:
+    inputs:
+      to:
+        description: "qor1 address to receive test QOR"
+        required: true
+        type: string
+      amount:
+        description: "Amount of test QOR (max 5)"
+        required: true
+        default: "2"
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: deployer-account
+  cancel-in-progress: false
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Send (hybrid-signed native transfer)
+        env:
+          DEPLOYER_MNEMONIC: ${{ secrets.DEPLOYER_MNEMONIC }}
+          SEND_TO: ${{ inputs.to }}
+          SEND_AMOUNT_QOR: ${{ inputs.amount }}
+        shell: bash
+        run: npx tsx scripts/send.ts | tee send.log
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo '### Send test QOR'
+            echo '```'
+            cat send.log 2>/dev/null || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
