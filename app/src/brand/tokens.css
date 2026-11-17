@@ -1,0 +1,144 @@
+/*
+ * Heirloom brand tokens + primitives.
+ *
+ * Classes
+ *   .q-btn            primary pill button (ice fill, void text). min-height 48px.
+ *     .q-btn--ghost   hairline pill, text colour
+ *     .q-btn--danger  dead-red outline pill
+ *     .q-btn--signal  signal-orange outline pill (the attacker / Q-Day action)
+ *     .q-btn--sm      compact (still 44px tap height)
+ *     .q-btn--block   full width
+ *   .q-link           ice text link, hairline underline
+ *   .q-eyebrow        12px mono uppercase, tracking .14em, ice
+ *   .q-display        Archivo expanded display text (font-stretch 118%, tight tracking)
+ *   .q-mono           JetBrains Mono for hashes, bytes, gas, addresses
+ *   .q-hair           1px hairline rule (use on <hr> or <div>)
+ *   .q-panel          void-2 surface, hairline border, radius 10
+ *   .q-badge          state pill: add one of
+ *     .q-badge--alive .q-badge--warning .q-badge--overdue
+ *     .q-badge--triggered .q-badge--settled .q-badge--closed .q-badge--none
+ *   .q-muted / .q-faint   text-2 / text-3 colour helpers
+ *   .q-field          16px input/select/textarea (no iOS zoom), hairline, radius 10
+ *   .q-sr             visually hidden
+ * CSS vars: --void --void-2 --void-3 --hair --text --text-2 --text-3 --ice --signal
+ *           --alive --warn --dead --still --font-display --font-ui --font-mono
+ *           --radius (10px) --pill (999px) --ease
+ */
+/* Self-hosted OFL fonts (latin subset). Vite inlines them into the single-file build. */
+@font-face { font-family: "Archivo"; font-style: normal; font-weight: 400 700; font-stretch: 100% 125%; font-display: swap; src: url("./fonts/Archivo-latin.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-style: normal; font-weight: 400 600; font-display: swap; src: url("./fonts/Inter-latin.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 400 500; font-display: swap; src: url("./fonts/JetBrainsMono-latin.woff2") format("woff2"); }
+
+:root {
+  color-scheme: dark;
+  --void: #05070D;
+  --void-2: #0B0F1A;
+  --void-3: #121829;
+  --hair: rgba(148, 170, 255, .14);
+  --text: #E9EDF7;
+  --text-2: #A3ADC2;
+  --text-3: #7A85A0;
+  --ice: #7EF0FF;
+  --signal: #FF6B2C;
+  --violet: var(--ice); /* compatibility alias, violet is retired */
+  --alive: #4BF0A0;
+  --warn: #FFC24B;
+  --dead: #FF5C7A;
+  --still: #7D8597;
+  --font-display: "Archivo", "Inter", system-ui, sans-serif;
+  --font-ui: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --stretch-display: 118%;
+  --stretch-sub: 112%;
+  --radius: 10px;
+  --pill: 999px;
+  --ease: cubic-bezier(.22, .8, .24, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; background: var(--void); }
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  font: 400 15px/1.55 var(--font-ui);
+  background-color: var(--void);
+  /* engineering grid: 8px minor, 64px major, both very faint */
+  background-image:
+    linear-gradient(rgba(148, 170, 255, .045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 170, 255, .045) 1px, transparent 1px),
+    linear-gradient(rgba(148, 170, 255, .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 170, 255, .035) 1px, transparent 1px);
+  background-size: 64px 64px, 64px 64px, 8px 8px, 8px 8px;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+img, svg { max-width: 100%; }
+:focus-visible { outline: 2px solid var(--ice); outline-offset: 2px; border-radius: 4px; }
+::selection { background: rgba(126, 240, 255, .28); color: #fff; }
+
+.q-display { font-family: var(--font-display); font-weight: 600; font-stretch: var(--stretch-display); letter-spacing: -.03em; line-height: 1.04; }
+.q-mono { font-family: var(--font-mono); font-size: .92em; letter-spacing: 0; }
+.q-muted { color: var(--text-2); }
+.q-faint { color: var(--text-3); }
+.q-eyebrow { font: 500 12px/1.2 var(--font-mono); text-transform: uppercase; letter-spacing: .14em; color: var(--ice); }
+.q-hair { border: 0; height: 1px; background: var(--hair); margin: 0; }
+.q-panel { background: var(--void-2); border: 1px solid var(--hair); border-radius: var(--radius); padding: 16px; }
+.q-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.q-link { color: var(--ice); text-decoration: none; border-bottom: 1px solid rgba(126, 240, 255, .35); cursor: pointer; background: none; border-top: 0; border-left: 0; border-right: 0; padding: 0; font: inherit; transition: border-color .4s var(--ease); }
+.q-link:hover { border-bottom-color: var(--ice); }
+
+.q-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px; padding: 0 24px;
+  border: 1px solid var(--ice); border-radius: var(--pill);
+  background: var(--ice); color: var(--void);
+  font: 600 15px/1 var(--font-ui); letter-spacing: -.005em;
+  cursor: pointer; text-decoration: none; white-space: nowrap;
+  transition: background .4s var(--ease), border-color .4s var(--ease), color .4s var(--ease), box-shadow .4s var(--ease), opacity .4s var(--ease);
+}
+.q-btn:hover:not(:disabled) { background: #A8F5FF; border-color: #A8F5FF; box-shadow: 0 0 24px rgba(126, 240, 255, .28); }
+.q-btn:disabled, .q-btn[aria-disabled="true"] { opacity: .4; cursor: not-allowed; }
+.q-btn--ghost { background: transparent; color: var(--text); border-color: rgba(148, 170, 255, .3); }
+.q-btn--ghost:hover:not(:disabled) { background: rgba(148, 170, 255, .08); border-color: var(--ice); color: var(--ice); box-shadow: none; }
+.q-btn--danger { background: transparent; color: var(--dead); border-color: rgba(255, 92, 122, .5); }
+.q-btn--danger:hover:not(:disabled) { background: rgba(255, 92, 122, .1); border-color: var(--dead); box-shadow: none; }
+.q-btn--signal { background: transparent; color: var(--signal); border-color: rgba(255, 107, 44, .6); }
+.q-btn--signal:hover:not(:disabled) { background: rgba(255, 107, 44, .1); border-color: var(--signal); box-shadow: none; }
+.q-btn--sm { min-height: 44px; padding: 0 18px; font-size: 14px; }
+.q-btn--block { display: flex; width: 100%; }
+
+.q-field {
+  width: 100%; min-height: 48px; padding: 10px 14px;
+  background: var(--void); border: 1px solid var(--hair); border-radius: var(--radius);
+  color: var(--text); font: 400 16px/1.3 var(--font-ui);
+  transition: border-color .4s var(--ease);
+}
+.q-field::placeholder { color: var(--text-3); }
+.q-field:hover { border-color: rgba(148, 170, 255, .3); }
+.q-field:focus { border-color: var(--ice); outline: none; box-shadow: 0 0 0 3px rgba(126, 240, 255, .14); }
+
+.q-badge {
+  --b: var(--still);
+  display: inline-flex; align-items: center; gap: 7px;
+  height: 26px; padding: 0 11px; border-radius: var(--pill);
+  border: 1px solid color-mix(in srgb, var(--b) 45%, transparent);
+  background: color-mix(in srgb, var(--b) 10%, transparent);
+  color: var(--b);
+  font: 500 11px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; white-space: nowrap;
+}
+.q-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--b); box-shadow: 0 0 8px var(--b); }
+.q-badge--alive { --b: var(--alive); }
+.q-badge--warning { --b: var(--warn); }
+.q-badge--overdue, .q-badge--triggered { --b: var(--dead); }
+.q-badge--settled, .q-badge--closed { --b: var(--still); }
+.q-badge--settled::before, .q-badge--closed::before { box-shadow: none; }
+.q-badge--none { --b: var(--text-3); }
+.q-badge--none::before { background: transparent; box-shadow: none; border: 1px solid var(--b); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}

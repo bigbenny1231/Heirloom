@@ -1,0 +1,35 @@
+name: Keeper
+# Triggers overdue vaults and settles triggered ones. Does nothing until the repository variable QDMV_ADDRESS is set.
+# The script pauses itself from Nov 16 to Nov 19 UTC so it cannot race the drill runs (same relayer account).
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+# Own group on purpose: a queued keeper run must never replace a pending deploy or drill run.
+concurrency:
+  group: keeper
+  cancel-in-progress: false
+jobs:
+  keep:
+    if: ${{ vars.QDMV_ADDRESS != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run build
+      - name: Trigger and settle
+        env:
+          DEPLOYER_MNEMONIC: ${{ secrets.DEPLOYER_MNEMONIC }}
+          QDMV_ADDRESS: ${{ vars.QDMV_ADDRESS }}
+          QDMV_FROM_BLOCK: ${{ vars.QDMV_FROM_BLOCK }}
+          KEEPER_MAX_ACTIONS: ${{ vars.KEEPER_MAX_ACTIONS }}
+        run: npx tsx scripts/keeper.ts

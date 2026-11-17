@@ -1,0 +1,46 @@
+name: Drill verify
+# Read-only: compare the drill vault's balances with what setup deposited. Run it after the drill day.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: drill-verify
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run build
+      - name: Read the vault
+        env:
+          DRILL_ADDRESS: ${{ vars.DRILL_ADDRESS }}
+          DRILL_MNEMONIC: ${{ secrets.DRILL_MNEMONIC }}
+          DRILL_KEY_MODE: ${{ vars.DRILL_KEY_MODE }}
+          DRILL_ACCOUNT_SHARE_BPS: ${{ vars.DRILL_ACCOUNT_SHARE_BPS }}
+          HEIR_ADDRESSES: ${{ vars.HEIR_ADDRESSES }}
+          QDMV_ADDRESS: ${{ vars.QDMV_ADDRESS }}
+          TEST_TOKEN_ADDRESS: ${{ vars.TEST_TOKEN_ADDRESS }}
+          QDMV_FROM_BLOCK: ${{ vars.QDMV_FROM_BLOCK }}
+          DRILL_QOR: ${{ vars.DRILL_QOR }}
+          DRILL_TOKENS: ${{ vars.DRILL_TOKENS }}
+        shell: bash
+        run: npx tsx scripts/drill/verify.ts | tee verify.log
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo '### Drill verify'
+            echo '```'
+            cat verify.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

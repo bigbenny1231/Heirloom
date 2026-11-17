@@ -1,0 +1,41 @@
+name: Deploy to testnet
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+# One group for every workflow that sends from the deployer account: its nonce must not race.
+concurrency:
+  group: deployer-account
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run build
+      - name: Deploy QDMVault and the Q-Day Test USD token
+        env:
+          DEPLOYER_MNEMONIC: ${{ secrets.DEPLOYER_MNEMONIC }}
+        run: npx tsx scripts/deploy.ts
+      - name: Show deployments/testnet.json
+        run: |
+          cat deployments/testnet.json
+          {
+            echo '### Deployed'
+            echo '```json'
+            cat deployments/testnet.json
+            echo '```'
+            echo 'Now set the repository variables QDMV_ADDRESS, TEST_TOKEN_ADDRESS and QDMV_FROM_BLOCK (values printed in the log above).'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: deployments-testnet
+          path: deployments/testnet.json

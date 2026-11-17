@@ -1,0 +1,47 @@
+name: Probe PQC precompile
+# First thing to run once the repo exists. Read-only, no secrets, no funds: asks the testnet's pqcVerify
+# precompile whether it accepts a signature over a raw 32-byte digest (the convention QDMVault uses).
+on:
+  workflow_dispatch:
+    inputs:
+      address:
+        description: "Optional 0x address whose pqcKeyStatus to report (e.g. the deployer)"
+        required: false
+        default: ""
+permissions:
+  contents: read
+concurrency:
+  group: probe
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Probe pqcVerify and pqcKeyStatus
+        env:
+          PROBE_ADDRESS: ${{ inputs.address }}
+        run: npx tsx scripts/probe-pqc.ts --out probe-result.json
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo '### PQC probe'
+            echo '```json'
+            cat probe-result.json 2>/dev/null || echo 'no result file (the probe could not reach the testnet)'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: probe-result
+          path: probe-result.json
+          if-no-files-found: ignore

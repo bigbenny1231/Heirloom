@@ -1,0 +1,32 @@
+name: Drill check-in
+# Extra evidence on drill day: the relayer submits a checkIn authorised by the drill account's post-quantum signature.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: deployer-account
+  cancel-in-progress: false
+jobs:
+  checkin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run build
+      - name: Relay a PQ-signed check-in
+        env:
+          DEPLOYER_MNEMONIC: ${{ secrets.DEPLOYER_MNEMONIC }}
+          DRILL_MNEMONIC: ${{ secrets.DRILL_MNEMONIC }}
+          HEIR_ADDRESSES: ${{ vars.HEIR_ADDRESSES }}
+          QDMV_ADDRESS: ${{ vars.QDMV_ADDRESS }}
+          TEST_TOKEN_ADDRESS: ${{ vars.TEST_TOKEN_ADDRESS }}
+          DRILL_KEY_MODE: ${{ vars.DRILL_KEY_MODE }}
+        run: npx tsx scripts/drill/checkin.ts
