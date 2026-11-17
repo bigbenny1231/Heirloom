@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ActionResult, Adapter, DrillReport, DrillRow, Hex, VaultView } from "./chain/types";
 import { createDemoAdapter } from "./chain/demo";
 import { TestnetAdapter, addressFromHash } from "./chain/testnet";
+import { LIVE_TESTNET } from "./chain/live";
 import { Sheet } from "./ui/Sheet";
 import { SettingsBody } from "./ui/Settings";
 import { VaultTab, KeysTab, WithdrawTab, DrillTab, HeirsTab, AgentTab, type Settlement, type TabProps } from "./ui/tabs";
@@ -282,6 +283,25 @@ export function App({ onBack, suggestedAddr, demoRequest = 0, active = true, ope
     setGuideOpen(true);
   }, []);
 
+  /** Testnet only: points the read-only view at the live sample vault and loads it. */
+  const loadLive = useCallback(async () => {
+    const t = testnet.current;
+    if (!t || !adapter || adapter.kind !== "testnet") return;
+    setBusy(true);
+    setPendingLabel("Reading the live vault…");
+    try {
+      t.setContract(LIVE_TESTNET.contract);
+      t.setVaultId(LIVE_TESTNET.vaultId);
+      const c = await t.checkContract();
+      if (c !== "ok") throw new Error("The live contract could not be checked. Try again in a moment.");
+      await refresh(adapter);
+    } catch (e) {
+      push({ ok: false, title: "Could not load the live vault", detail: e instanceof Error ? e.message : "Try again in a moment.", at: Date.now() });
+    } finally {
+      setBusy(false);
+    }
+  }, [adapter, refresh, push]);
+
   /** Rebuilds the sample vault and drops every screen's local state (old toasts, a shown backup string). */
   const startOver = useCallback(async () => {
     if (!adapter || starting.current) return;
@@ -394,11 +414,12 @@ export function App({ onBack, suggestedAddr, demoRequest = 0, active = true, ope
             onOpenLab: () => goTab("lab"),
             onStory: mode === "demo" ? openStory : undefined,
             onCreate: mode === "demo" ? openCreate : undefined,
+            onLoadLive: mode === "testnet" ? loadLive : undefined,
             persona,
             setPersona,
           }
         : null,
-    [adapter, vault, busy, run, refresh, drill, startDrill, push, demoGuide, act, closeGuide, openGuide, startOver, mode, switchMode, settlement, epoch, log, goTab, openStory, openCreate, persona, qday, active],
+    [adapter, vault, busy, run, refresh, drill, startDrill, push, demoGuide, act, closeGuide, openGuide, startOver, mode, switchMode, settlement, epoch, log, goTab, openStory, openCreate, loadLive, persona, qday, active],
   );
 
   // Each screen starts at the top.

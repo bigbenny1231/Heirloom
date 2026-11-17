@@ -10,7 +10,8 @@
 | What it is | An on-chain will with a dead man's switch: check in or your heirs are paid |
 | Why QoreChain | The owner's authority is an ML-DSA-87 signature checked in the EVM by the `pqcVerify` precompile, so the vault survives the day secp256k1 keys can be recovered |
 | QoreChain features | `pqcVerify`, `pqcKeyStatus`, scoped EVM authorisation windows, hybrid-signed native transactions, `@qorechain/sdk`, `@qorechain/evm` |
-| Try it in 2 minutes | `npm ci && npm run build && npm run app:dev`, open the printed address on a phone or desktop, stay in Demo mode |
+| Live demo | [heirloomqore.vercel.app](https://heirloomqore.vercel.app) works on a phone or desktop with no wallet. Demo mode runs the real bytecode and real ML-DSA-87 in the page; Testnet mode has a "Load the live vault" button that reads a real vault on chain 9800 |
+| Run it locally | `npm ci && npm run build && npm run app:dev`, open the printed address, stay in Demo mode |
 | Tests | 192 contract tests (6 are Solidity fuzz and invariant tests), 53 simulator tests with real ML-DSA-87, 48 script tests, 49 app tests (342 in total) |
 | Testnet | `qorechain-diana`, EVM chain 9800. Addresses are listed under [Testnet deployment](#testnet-deployment) |
 | Licence | MIT |
@@ -139,7 +140,7 @@ Drill bot attacks in the catalogue:
 
 `app/` builds to one self-contained HTML file. Demo mode runs the real contract bytecode on a simulated chain (`sim/`). The simulator installs `pqcVerify` and `pqcKeyStatus` as precompiles that verify real ML-DSA-87 signatures (`@noble/post-quantum`). The Hardhat tests use a mock precompile instead, which accepts only signatures the test harness has verified with the same library. The demo includes the drill view.
 
-Hosting: `vercel.json` builds the contracts and the app (`npm run build && npm run app:build`) and serves `app/dist`. Importing the repository on Vercel needs no other settings. Any static host works the same way.
+Hosting: live at https://heirloomqore.vercel.app. `vercel.json` builds the contracts and the app (`npm run build && npm run app:build`) and serves `app/dist`. Importing the repository on Vercel needs no other settings. Any static host works the same way.
 
 Testnet mode connects through viem to QoreChain testnet (chain 9800) with an injected EIP-1193 wallet. It works only when the page is opened in a wallet browser such as QoreX.
 

@@ -38,6 +38,8 @@ export interface TabProps {
   onStory?: () => void;
   /** Opens the create flow (demo only). */
   onCreate?: () => void;
+  /** Loads the live sample vault on testnet, read only (testnet only). */
+  onLoadLive?: () => Promise<void>;
   /** Who is looking at the Heirs screen. Kept above the tabs so it survives a tab change. */
   persona?: Persona;
   setPersona?: (p: Persona) => void;
@@ -91,14 +93,17 @@ function Empty({ p, eyebrow, title }: { p: TabProps; eyebrow: string; title: str
         <h3>No vault yet</h3>
         {testnet ? (
           <>
-            <p>The vault contract is not deployed to testnet yet, so there is nothing to load today. A sample vault will be readable here once it is. QoreX is a wallet browser: open this page in it to sign. Demo mode needs nothing.</p>
+            <p>Heirloom is live on QoreChain testnet. Load the sample vault to read a real one, no wallet needed. To sign, open this page in a wallet browser such as QoreX. Demo mode needs nothing.</p>
+            {p.onLoadLive && (
+              <button className="q-btn q-btn--sm" style={{ marginTop: 16 }} disabled={p.busy} onClick={() => void p.onLoadLive!()}>Load the live vault</button>
+            )}
             <ol className="nsteps">
               <li><span>01</span>Connect your wallet in QoreX, or skip this to read only.</li>
               <li><span>02</span>Enter the vault contract address and the vault id.</li>
               <li><span>03</span>Load the vault, or create one pinned to this page's key.</li>
             </ol>
             <div className="pair">
-              {p.openSettings && <button className="q-btn q-btn--sm" onClick={p.openSettings}>Open settings</button>}
+              {p.openSettings && <button className="q-btn q-btn--ghost q-btn--sm" onClick={p.openSettings}>Open settings</button>}
               {p.onSwitchMode && <button className="q-btn q-btn--ghost q-btn--sm" onClick={() => p.onSwitchMode!("demo")}>Switch to Demo mode</button>}
             </div>
           </>

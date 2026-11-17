@@ -1,6 +1,6 @@
 # Submission checklist
 
-Project: Heirloom (Quantum Dead Man's Vault). Repository: `github.com/bigbenny1231/Heirloom`. Hackathon: QoreChain "Build Before Q-Day", category Post-Quantum dApp.
+Project: Heirloom (Quantum Dead Man's Vault). Repository: `github.com/bigbenny1231/Heirloom`. Live demo: https://heirloomqore.vercel.app. Hackathon: QoreChain "Build Before Q-Day", category Post-Quantum dApp.
 
 What Heirloom does that other inheritance entries do not: it pays out funds held by the contract (no seed phrase is ever handed over), it needs no witness or guardian quorum (anyone can trigger it after the deadline, and heirs get fixed shares), and every owner action, the check-in included, is an ML-DSA-87 signature verified on chain. See "How Heirloom is different" in the README.
 
@@ -23,10 +23,11 @@ The organisers say rules and dates may still change, so read both pages again be
 | Item | Status | Where it lives / action |
 |---|---|---|
 | Registration complete (GitHub, X and a QoreX testnet address all connected; 18 or older) | owner action | On build.qorechain.io. Every team member registers. Team size for Post-Quantum dApp is 1 to 3. |
-| Public GitHub repository | owner action | Create the repository and push this tree. |
+| Public GitHub repository | done | https://github.com/bigbenny1231/Heirloom (public). |
+| Live demo link | done | https://heirloomqore.vercel.app, deployed by Vercel from `main` on every push. Demo mode needs nothing; Testnet mode can load the live vault read only. |
 | QoreChain Build GitHub App installed on the repository | owner action | Required by the start page. Install it on the public repository once it exists. |
 | MIT or Apache-2.0 licence file in the repository | done | [`LICENSE`](../LICENSE) (MIT), "Copyright (c) 2026 Andrew Garretson" |
-| README | done | [`README.md`](../README.md): summary table, architecture diagram, quickstart, test counts, security notes, credits. Testnet addresses go in after the deploy workflow. |
+| README | done | [`README.md`](../README.md): summary table, architecture diagram, quickstart, test counts, security notes, credits. Testnet addresses are listed under "Testnet deployment". |
 | Libraries, kits and templates credited in the README | done | README "Credits" lists OpenZeppelin, noble, ethereumjs, viem, Hardhat, React, Vite, the QoreChain kits and the `create-qorechain-dapp` template. |
 | Built during the event (Nov 4 to Dec 2) | done | Built in November 2026. The design is ported from the author's own NEAR entry; no code was copied (README "Credits"). |
 | Featured (cover) image: 16:9, at least 1200 x 675 px, JPG, PNG or WebP, at most 5 MB | owner action | Not in the repository. The rules list it as required; the start page calls it optional. Make one. |
