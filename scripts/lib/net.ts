@@ -53,9 +53,36 @@ export const DEPLOYER_SPEC: AccountSpec = {
 
 export const DRILL_SPEC: AccountSpec = { mnemonicVar: "DRILL_MNEMONIC" };
 
+/**
+ * Recovery phrases pasted on a phone often arrive with capitals, line breaks, double spaces, commas or "1." numbering.
+ * Normalise to lowercase words separated by single spaces. Never logs the words.
+ */
+export function normalizeMnemonic(raw: string): string {
+  return raw
+    .normalize("NFKD")
+    .toLowerCase()
+    .replace(/[,;|"'`]/g, " ")
+    .split(/\s+/)
+    .map((w) => w.replace(/^\d+[.):-]?/, ""))
+    .filter((w) => w.length > 0)
+    .join(" ");
+}
+
 export async function accountFromEnv(env: NodeJS.ProcessEnv, spec: AccountSpec): Promise<UnifiedAccount> {
-  const mnemonic = env[spec.mnemonicVar]?.trim() || (spec.fallbackMnemonicVar ? env[spec.fallbackMnemonicVar]?.trim() : "");
-  if (mnemonic) return deriveUnifiedAccount(mnemonic, 0);
+  const varName = env[spec.mnemonicVar]?.trim() ? spec.mnemonicVar : spec.fallbackMnemonicVar;
+  const raw = env[spec.mnemonicVar]?.trim() || (spec.fallbackMnemonicVar ? env[spec.fallbackMnemonicVar]?.trim() : "");
+  if (raw) {
+    const mnemonic = normalizeMnemonic(raw);
+    const n = mnemonic.split(" ").length;
+    try {
+      return await deriveUnifiedAccount(mnemonic, 0);
+    } catch {
+      throw new Error(
+        `${varName} is not a valid recovery phrase (found ${n} words; expected 12 or 24). ` +
+          "Re-enter the secret with the words exactly as MetaMask shows them, separated by spaces. Check each word's spelling.",
+      );
+    }
+  }
 
   const key = spec.privateKeyVar ? env[spec.privateKeyVar]?.trim() : undefined;
   if (key) {

@@ -11,6 +11,13 @@ describe("account loading", () => {
     expect(acc.cosmos.startsWith("qor1")).toBe(true);
     expect(acc.pqc.publicKey).toHaveLength(2592);
     expect(acc.privateKey).toMatch(/^0x[0-9a-f]{64}$/);
+    // a phone paste (capitals, numbering, line breaks, commas) derives the same account
+    const pasted = "1. Test\n2. test,  3) TEST test test\ttest test test test test test Junk\n";
+    expect((await accountFromEnv({ DEPLOYER_MNEMONIC: pasted }, DEPLOYER_SPEC)).evm).toBe(acc.evm);
+    // a wrong word fails with a clear message that does not echo the words
+    const bad = accountFromEnv({ DEPLOYER_MNEMONIC: MNEMONIC.replace("junk", "jank") }, DEPLOYER_SPEC);
+    await expect(bad).rejects.toThrow(/DEPLOYER_MNEMONIC is not a valid recovery phrase \(found 12 words/);
+    await expect(accountFromEnv({ DEPLOYER_MNEMONIC: MNEMONIC.replace("junk", "jank") }, DEPLOYER_SPEC)).rejects.not.toThrow(/jank|test test/);
   });
   it("is deterministic and prefers DEPLOYER_MNEMONIC over the fallback", async () => {
     const a = await accountFromEnv({ DEPLOYER_MNEMONIC: MNEMONIC, QORE_MNEMONIC: "x" }, DEPLOYER_SPEC);
