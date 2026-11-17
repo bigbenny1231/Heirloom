@@ -1,12 +1,14 @@
 # Heirloom
 
+[![Built on QoreChain](https://build.qorechain.io/badge/heirloom.svg)](https://build.qorechain.io/p/heirloom)
+
 **Quantum Dead Man's Vault.** A heartbeat inheritance vault on QoreChain. The owner checks in on a schedule. If the owner stops, anyone can trigger the vault after the deadline and the heirs are paid. Every action that moves money or changes the plan needs an ML-DSA-87 (FIPS 204) signature from the owner, verified on-chain through the `pqcVerify` precompile. A leaked classical (secp256k1) key therefore cannot drain the vault, rewrite the heirs or keep the timer from running out.
 
 ## At a glance
 
 | | |
 |---|---|
-| Hackathon | QoreChain Build Before Q-Day, category **Post-Quantum dApp** |
+| Hackathon | QoreChain Build Before Q-Day, category **Post-Quantum dApp**. Project page: [build.qorechain.io/p/heirloom](https://build.qorechain.io/p/heirloom) |
 | What it is | An on-chain will with a dead man's switch: check in or your heirs are paid |
 | Why QoreChain | The owner's authority is an ML-DSA-87 signature checked in the EVM by the `pqcVerify` precompile, so the vault survives the day secp256k1 keys can be recovered |
 | QoreChain features | `pqcVerify`, `pqcKeyStatus`, scoped EVM authorisation windows, hybrid-signed native transactions, `@qorechain/sdk`, `@qorechain/evm` |
