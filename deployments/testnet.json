@@ -1,0 +1,18 @@
+{
+  "network": "qorechain-diana",
+  "evmChainId": 9800,
+  "deployer": "0xA70dB7EAd2BF55C5c9CcD8C8FE32b55480239215",
+  "deployedAt": "2026-11-17T15:47:28.387Z",
+  "vault": {
+    "address": "0xdfeeb8c95326d25df5b8eb5a510009daaff5058a",
+    "txHash": "0x273ddeee8630cd67eee083b229a36d9cfd92782dc987d7e4a65e568e765ba03f",
+    "block": "10263344"
+  },
+  "testToken": {
+    "address": "0xafdd8e9283a6c79d4beb0439c470fc4d639d63b2",
+    "txHash": "0xd62c7b8e0d8a38d0ca7163370448167f82427bcf894fdfa20c6f063ea254f184",
+    "block": "10263345",
+    "name": "Q-Day Test USD",
+    "symbol": "qUSD"
+  }
+}

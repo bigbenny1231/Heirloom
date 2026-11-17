@@ -184,15 +184,17 @@ Deployment and the Q-Day drill run from GitHub Actions against QoreChain testnet
 
 Testnet addresses:
 
-- QDMVault: not deployed yet (filled in after the deploy workflow runs)
-- Q-Day Test USD (test token): not deployed yet
+- QDMVault: `0xdfeeb8c95326d25df5b8eb5a510009daaff5058a` (`qor1mlht3j2nymf9madcadd9zqqfm2hl2pv2rfzpac`), deployed Nov 17, 2026 in block 10263344, tx `0x273ddeee8630cd67eee083b229a36d9cfd92782dc987d7e4a65e568e765ba03f`
+- Q-Day Test USD (test token): `0xafdd8e9283a6c79d4beb0439c470fc4d639d63b2` (`qor14lwcay5r5mre6jltqsuugu8uf43e6cajadvanc`), block 10263345
+- Deployer: `0xA70dB7EAd2BF55C5c9CcD8C8FE32b55480239215`, with its ML-DSA-87 key registered on chain (possession proven)
+- Both addresses are also in [`deployments/testnet.json`](deployments/testnet.json), which the scripts read when the repository variables are not set
 - Drill vaults and drill account: set up by the drill-setup workflow
 - Proof transaction hash: made during the drill (Nov 18 UTC)
 
 ## Security notes and known limits
 
 - **Testnet only.** The `pqcVerify` and `pqcKeyStatus` precompiles exist on QoreChain testnet. On a chain where a precompile is inactive, it returns success with empty data. The contract checks return length and fails closed, so no signed action can pass and nothing can be forged. Funds still reach the heirs through the heartbeat path.
-- **Message convention.** The contract passes the 32-byte digest as the raw message with an empty ML-DSA-87 context. This is the convention of QoreChain's own library: `scripts/lib/interop.test.ts` shows that a signature from this repository's signer verifies under `@qorechain/pqc` and is byte-identical to the one that library produces for the same key and digest. The probe workflow (`probe.yml`) then checks the precompile itself on testnet with a fresh key and no funds. Probe result: not run yet; it is the first workflow to run once the repository exists.
+- **Message convention.** The contract passes the 32-byte digest as the raw message with an empty ML-DSA-87 context. This is the convention of QoreChain's own library: `scripts/lib/interop.test.ts` shows that a signature from this repository's signer verifies under `@qorechain/pqc` and is byte-identical to the one that library produces for the same key and digest. The probe workflow (`probe.yml`) then checks the precompile itself on testnet with a fresh key and no funds. Probe result (Nov 17, 2026, testnet): `"conventionConfirmed": true`. A valid signature over the raw digest with an empty context returns true, and every tampered case returns false.
 - **`pqcKeyStatus` shapes.** QoreChain's precompile documentation gives four return values (`registered, algorithmId, pubkey, possessionProven`; the fourth was added in chain release v3.2.4), while the ABI bundled in `@qorechain/evm` 0.14.0 still lists three. The contract parses the raw answer and accepts both. With four values it requires `possessionProven == true`. A three-value answer cannot prove possession, so `createVault` (which has no signature) reverts `PQKeyPossessionNotProven` on it, and creation goes through `createVaultFor`, which checks an ML-DSA-87 signature against the registry key. The deploy and drill scripts print which shape the testnet returns. Both are covered by tests in `sim/keystatus3.test.ts` and `test/11-keystatus-shapes.test.ts`.
 - **ACCOUNT mode trusts the registry.** An ACCOUNT vault follows `pqcKeyStatus(owner)` live. If QoreChain ever let a classical key alone re-register an ML-DSA-87 key, an ACCOUNT vault would follow it. QoreChain's docs say rotating or migrating a key needs signatures from the old and new keys, and a second registration is refused once a key exists. The drill still sets up both modes and keeps 90% of the drill value in the DEVICE vault, which pins the key hash and doesn't depend on that rule.
 - **Owner key loss.** An owner who loses the ML-DSA-87 key cannot recover the vault. The heirs receive it after the deadline. That is the design.
