@@ -63,7 +63,7 @@ export function normalizeMnemonic(raw: string): string {
     .toLowerCase()
     .replace(/[,;|"'`]/g, " ")
     .split(/\s+/)
-    .map((w) => w.replace(/^\d+[.):-]?/, ""))
+    .map((w) => (/^\d+$/.test(w) ? "" : w.replace(/^\d+[.):-]/, "")))
     .filter((w) => w.length > 0)
     .join(" ");
 }
