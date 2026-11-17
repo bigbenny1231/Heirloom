@@ -17,6 +17,7 @@ describe("account loading", () => {
     // a wrong word fails with a clear message that does not echo the words
     const bad = accountFromEnv({ DEPLOYER_MNEMONIC: MNEMONIC.replace("junk", "jank") }, DEPLOYER_SPEC);
     await expect(bad).rejects.toThrow(/DEPLOYER_MNEMONIC is not a valid recovery phrase \(found 12 words/);
+    await expect(accountFromEnv({ DEPLOYER_MNEMONIC: `0x${"ab".repeat(32)}` }, DEPLOYER_SPEC)).rejects.toThrow(/looks like a private key/);
     await expect(accountFromEnv({ DEPLOYER_MNEMONIC: MNEMONIC.replace("junk", "jank") }, DEPLOYER_SPEC)).rejects.not.toThrow(/jank|test test/);
   });
   it("is deterministic and prefers DEPLOYER_MNEMONIC over the fallback", async () => {

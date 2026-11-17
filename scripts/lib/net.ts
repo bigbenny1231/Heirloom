@@ -77,8 +77,13 @@ export async function accountFromEnv(env: NodeJS.ProcessEnv, spec: AccountSpec):
     try {
       return await deriveUnifiedAccount(mnemonic, 0);
     } catch {
+      const hint = /^(0x)?[0-9a-f]{64}$/.test(mnemonic)
+        ? " It looks like a private key. This secret needs the wallet's 12-word Secret Recovery Phrase instead."
+        : n === 1
+          ? " Only one word was found: the words may be missing their spaces."
+          : "";
       throw new Error(
-        `${varName} is not a valid recovery phrase (found ${n} words; expected 12 or 24). ` +
+        `${varName} is not a valid recovery phrase (found ${n} words; expected 12 or 24).${hint} ` +
           "Re-enter the secret with the words exactly as MetaMask shows them, separated by spaces. Check each word's spelling.",
       );
     }
