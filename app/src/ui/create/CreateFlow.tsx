@@ -263,7 +263,7 @@ export function CreateFlow({ adapter, onCreated, onCancel, onSealed, onBusyChang
             )}
             {phase === "failed" && <p className="cf-err" role="alert">{error}</p>}
           </div>
-          <p className="cf-note">Testnet only, not deployed yet, no third-party audit. Not a will.</p>
+          <p className="cf-note">Sealed on the in-browser demo chain. Nothing has value, no third-party audit. Not a will.</p>
         </div>
       )}
 

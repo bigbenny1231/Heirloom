@@ -376,7 +376,7 @@ const FAQ: { q: string; a: string }[] = [
   { q: "What if I am offline?", a: "Silence moves the vault from Alive to Warning, then through grace. If check-ins stay stopped past warning plus grace, anyone can trigger it. Pick a schedule longer than any absence you expect, and check in before the deadline to reset it." },
   { q: "What if I lose the device?", a: "There are two key modes. ACCOUNT uses the account’s registered post-quantum key. DEVICE uses a pinned key held by this device. The app has key backup, import and rotate, so back up before you rely on it. We do not claim recovery beyond that." },
   { q: "Why QoreChain?", a: "QoreChain’s pqcVerify precompile verifies ML-DSA-87 signatures on chain. That lets the contract itself check a lattice signature for every owner action. This project was built for the Build Before Q-Day event." },
-  { q: "What does it cost?", a: "The demo in the app is free and needs no wallet. Once it is deployed to the QoreChain testnet (chain id 9800) you will pay testnet gas, which has no value. It is not deployed yet, and mainnet is not planned, so we cannot quote a real cost." },
+  { q: "What does it cost?", a: "The demo in the app is free and needs no wallet. The vault is live on the QoreChain testnet (chain id 9800), where you pay testnet gas, which has no value. Mainnet is not planned, so we cannot quote a real cost." },
   { q: "Can heirs see the balance?", a: "Assume yes. Vault state lives on a public chain and this project makes no privacy claim." },
 ];
 
@@ -540,13 +540,13 @@ export function Landing({ onOpenApp, onOpenLab }: { onOpenApp: () => void; onOpe
             <Reveal><SecHead no="06" title="What is tested" /></Reveal>
             <Reveal>
               <dl className="ld-proof">
-                {[["2,592 B", "ML-DSA-87 public key"], ["4,627 B", "ML-DSA-87 signature"], ["192", "contract tests, incl. fuzz and invariant"], ["342", "tests in total (192 contract, 53 sim, 48 scripts, 49 app)"], ["MIT", "licence"], ["9800", "target testnet chain id (not deployed yet)"]].map(([v, l]) => (
+                {[["2,592 B", "ML-DSA-87 public key"], ["4,627 B", "ML-DSA-87 signature"], ["192", "contract tests, incl. fuzz and invariant"], ["342", "tests in total (192 contract, 53 sim, 48 scripts, 49 app)"], ["MIT", "licence"], ["9800", "QoreChain testnet chain id, live since Nov 17"]].map(([v, l]) => (
                   <div key={l}><dt className="q-display">{v}</dt><dd>{l}</dd></div>
                 ))}
               </dl>
             </Reveal>
             <Reveal>
-              <p className="ld-status"><b>Honest status.</b> Built for the QoreChain testnet and not deployed yet, not even to testnet. Not audited by a third party. Nothing here has value, so do not put real funds near it.</p>
+              <p className="ld-status"><b>Honest status.</b> Live on the QoreChain testnet since Nov 17, 2026, at contract 0xdfee…058a. Not audited by a third party. Nothing here has value, so do not put real funds near it.</p>
             </Reveal>
           </div>
         </section>
@@ -579,7 +579,7 @@ export function Landing({ onOpenApp, onOpenLab }: { onOpenApp: () => void; onOpe
       <footer className="ld-foot">
         <div className="ld-wrap">
           <Logo size={22} />
-          <p className="ld-disc">Not a will. Not legal advice. Not deployed yet, not audited.</p>
+          <p className="ld-disc">Not a will. Not legal advice. Testnet only, not audited.</p>
           <p className="q-muted">Built for QoreChain Build Before Q-Day, November 2026</p>
         </div>
       </footer>
